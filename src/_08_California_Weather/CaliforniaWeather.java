@@ -3,6 +3,7 @@ package _08_California_Weather;
 import java.awt.Button;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -34,35 +35,38 @@ import javax.swing.*;
 public class CaliforniaWeather implements ActionListener {
 	JFrame frame = new JFrame();
 	JPanel pane = new JPanel();
-	JLabel label = new JLabel();
+	JTextArea label = new JTextArea();
 	JButton search = new JButton();
 	JButton condition = new JButton();
 	JButton tempature = new JButton();
 	HashMap<String, WeatherData> weatherData = Utilities.getWeatherData();
 	String cityName = "";
 
+ArrayList<String> correctConditions = new ArrayList<>();
+	
 	void start() {
 		
 		
 		
 		frame.setVisible(true);
-		frame.setSize(650, 275);
+		frame.setSize(850, 300);
 		frame.add(pane);
 		pane.add(label);
 		pane.add(search);
 		pane.add(condition);
 		pane.add(tempature);
 		pane.setLayout(null);
-		label.setBounds(50, 25, 500, 100);
-		search.setBounds(50, 150, 150, 100);
-		condition.setBounds(250, 150, 150, 100);
-		tempature.setBounds(450, 150, 150, 100);
+		label.setBounds(0, 0, 850, 200);
+		search.setBounds(150, 200, 150, 100);
+		condition.setBounds(450, 200, 200, 100);
+		tempature.setBounds(700, 200, 200, 100);
 		search.setText("search");
 		condition.setText("see conditions");
 		tempature.setText("view tempature ranges");
 		search.addActionListener(this);
 		condition.addActionListener(this);
 		tempature.addActionListener(this);
+		System.out.println(weatherData.size());	
 	
 
 		// All city keys have the first letter capitalized of each word
@@ -74,24 +78,53 @@ public class CaliforniaWeather implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		int c = weatherData.size();
 		if (e.getSource().equals(search)) {
 			cityName = JOptionPane.showInputDialog("what city would you like to view the weather of?");
 			WeatherData datum = weatherData.get(cityName);
 			label.setText(
 					cityName + " is " + datum.weatherSummary + " with a temperature of " + datum.temperatureF + " F");
 		} else if(e.getSource().equals(condition)) {
+			correctConditions.clear();
 			String condition = JOptionPane.showInputDialog("what conditon do you want?");
 			WeatherData datum = weatherData.get(cityName);
 			for(String city : weatherData.keySet()) {
 				WeatherData wd = weatherData.get(city);
 				System.out.println(wd.weatherSummary);
+				if(wd.weatherSummary.equals(condition)) {
+				correctConditions.add(city);
+				}
 				
 			}
+			int z = 0;
+			String b = "";
+			for(String i:correctConditions) {
+					
+				b+=i + ", ";
+					z++;
+					if(z%15==0) {
+						b+= "\n";
+					}
+				}
 			label.setText(
-					"all of these cities are " + datum.weatherSummary +  ": " + datum );
-			
+					"all of these cities are " + condition +  ": " + "\n"+ b);
+
 		} else {
+			String i = JOptionPane.showInputDialog("what minimum tempature do you want?");
+			String x = JOptionPane.showInputDialog("what maximum tempature do you want?");
+	
+			int min = Integer.parseInt(i);
+			int max = Integer.parseInt(x);
+			WeatherData datum = weatherData.get(cityName);
+			for(String city : weatherData.keySet()) {
+				WeatherData wd = weatherData.get(city);
+				
+			if(min<wd.temperatureF && wd.temperatureF<max) {
+			//	label.setText(text);
+			}
+				
 			
 		}
+	}
 	}
 }
