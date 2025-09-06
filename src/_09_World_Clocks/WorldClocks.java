@@ -41,6 +41,7 @@ import javax.swing.Timer;
 public class WorldClocks implements ActionListener {
     ClockUtilities clockUtil;
     Timer timer;
+
     ArrayList<TimeZone> timeZone= new ArrayList<TimeZone>();
 String newCityName;
     JFrame frame;
@@ -54,7 +55,7 @@ String newCityName;
     String city;
     String dateStr;
     String timeStr;
-    HashMap<String, String> area = new HashMap<String, String>();
+    HashMap<String, TimeZone> cityToZone = new HashMap<String, TimeZone>();
     
     public WorldClocks() {
         clockUtil = new ClockUtilities();
@@ -80,7 +81,7 @@ String newCityName;
         panel.add(button);
         button.setText("add city");
         button.addActionListener(this);
-        textArea.setText(city + "\n" + dateStr);
+  
         
         // This Timer object is set to call the actionPerformed() method every
         // 1000 milliseconds
@@ -99,20 +100,23 @@ String newCityName;
     @Override
     public void actionPerformed(ActionEvent arg0) {
     	String s = "";
-    for(int i = 0; i<timeZone.size(); i++) {
-    	Calendar c = Calendar.getInstance(timeZone.get(i));
-        
+    for(String city : cityToZone.keySet()) {
+    	TimeZone zone = cityToZone.get(city);
+    	Calendar c = Calendar.getInstance( zone   );
+    	 String month =c.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+         String dayOfWeek =c.getDisplayName( Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+         dateStr = dayOfWeek + " " + month + " " + c.get(Calendar.DAY_OF_MONTH) + " " + c.get(Calendar.YEAR);
 	    String militaryTime = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND);
         String twelveHourTime = " [" + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND) + "]";
         
-        s+=(city+ "\n" + militaryTime + twelveHourTime + "\n");
+        s+=(city+"\n" + dateStr + "\n" + militaryTime + ", " + twelveHourTime + "\n");
     	
     }
     textArea.setText(s+"");
         if(arg0.getSource()==button) {
         	newCityName = JOptionPane.showInputDialog("what city would you like to add");
-        	timeZone.add(clockUtil.getTimeZoneFromCityName(newCityName));
-        	city = newCityName;
+        	cityToZone.put(newCityName, clockUtil.getTimeZoneFromCityName(newCityName));
+        	
         	i++;
         }
         
